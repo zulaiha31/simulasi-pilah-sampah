@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulasi Pilah Sampah</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #eef2f3;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #2a7f62;
+    }
+    .trash-items, .bins {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .item, .bin {
+      border: 2px dashed #ccc;
+      padding: 10px;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 10px;
+      cursor: grab;
+    }
+    .bin {
+      background: #f9f9f9;
+    }
+    .correct {
+      border-color: green;
+    }
+    .wrong {
+      border-color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulasi Pilah Sampah</h1>
+  <p>Tarik sampah ke tempat sampah yang sesuai!</p>
+  <div class="trash-items">
+    <div class="item" draggable="true" data-type="organik">Kulit Pisang</div>
+    <div class="item" draggable="true" data-type="anorganik">Botol Plastik</div>
+    <div class="item" draggable="true" data-type="organik">Daun Kering</div>
+    <div class="item" draggable="true" data-type="anorganik">Kaleng Bekas</div>
+  </div>
+
+  <div class="bins">
+    <div class="bin" data-accept="organik">Organik</div>
+    <div class="bin" data-accept="anorganik">Anorganik</div>
+  </div>
+
+  <script>
+    const items = document.querySelectorAll('.item');
+    const bins = document.querySelectorAll('.bin');
+
+    items.forEach(item => {
+      item.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', item.dataset.type);
+        e.dataTransfer.setData('text/itemid', item.textContent);
+        item.classList.remove('correct', 'wrong');
+      });
+    });
+
+    bins.forEach(bin => {
+      bin.addEventListener('dragover', e => e.preventDefault());
+      bin.addEventListener('drop', e => {
+        e.preventDefault();
+        const itemType = e.dataTransfer.getData('text/plain');
+        const itemText = e.dataTransfer.getData('text/itemid');
+        const correctType = bin.dataset.accept;
+        const targetItem = Array.from(items).find(el => el.textContent.includes(itemText));
+
+        if (itemType === correctType) {
+          targetItem.classList.add('correct');
+          if (!targetItem.textContent.includes('✔')) targetItem.textContent += ' ✔';
+        } else {
+          targetItem.classList.add('wrong');
+          if (!targetItem.textContent.includes('✖')) targetItem.textContent += ' ✖';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
